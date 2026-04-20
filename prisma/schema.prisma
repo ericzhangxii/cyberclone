@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  emailVerified DateTime?
+  name          String?
+  username      String?        @unique
+  image         String?
+  password      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  cyberclone    Cyberclone?
+  conversations Conversation[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Cyberclone {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  name          String
+  bio           String?
+  systemPrompt  String         @default("")
+  model         String         @default("claude-sonnet-4-6")
+  isPublic      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents     Document[]
+  conversations Conversation[]
+}
+
+model Document {
+  id          String     @id @default(cuid())
+  cloneId     String
+  filename    String
+  blobUrl     String
+  textContent String     @default("")
+  createdAt   DateTime   @default(now())
+  clone       Cyberclone @relation(fields: [cloneId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id          String           @id @default(cuid())
+  cloneId     String
+  visitorId   String?
+  mode        ConversationMode @default(PUBLIC)
+  title       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  clone       Cyberclone       @relation(fields: [cloneId], references: [id], onDelete: Cascade)
+  visitor     User?            @relation(fields: [visitorId], references: [id], onDelete: SetNull)
+  messages    Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+enum ConversationMode {
+  INCOGNITO
+  PRIVATE
+  PUBLIC
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}

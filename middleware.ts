@@ -1,5 +1,8 @@
-export { auth as middleware } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
+
+export const { auth: middleware } = NextAuth(authConfig);
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/setup"],
 };

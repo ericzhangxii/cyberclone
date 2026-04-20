@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { upsertClone } from "@/actions/clone";
-import { CLAUDE_MODELS } from "@/lib/anthropic";
+import { CLAUDE_MODELS } from "@/lib/models";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

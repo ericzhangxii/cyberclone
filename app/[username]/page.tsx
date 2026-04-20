@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { CLAUDE_MODELS } from "@/lib/anthropic";
+import { CLAUDE_MODELS } from "@/lib/models";
 
 interface Props {
   params: Promise<{ username: string }>;

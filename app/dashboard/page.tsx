@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { getMyInboxConversations } from "@/actions/conversation";
+import { DeleteAccountButton } from "@/components/DeleteAccountButton";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -20,6 +21,8 @@ export default async function DashboardPage() {
     include: { cyberclone: { include: { documents: true } } },
   });
 
+  if (!user?.username) redirect("/setup");
+
   const clone = user?.cyberclone;
   const inbox = clone ? await getMyInboxConversations() : [];
 
@@ -27,7 +30,7 @@ export default async function DashboardPage() {
     <>
       <Navbar />
       <main className="max-w-3xl mx-auto px-4 py-10 w-full">
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-8 justify-between">
           <Avatar className="h-10 w-10">
             <AvatarImage src={session.user.image ?? undefined} />
             <AvatarFallback>{session.user.name?.[0]?.toUpperCase()}</AvatarFallback>
@@ -40,6 +43,7 @@ export default async function DashboardPage() {
               </Link>
             )}
           </div>
+          <DeleteAccountButton />
         </div>
 
         <Tabs defaultValue="clone">

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { Navbar } from "@/components/Navbar";
 import { CloneCard } from "@/components/CloneCard";
 import { buttonVariants } from "@/components/ui/button";
@@ -20,7 +21,7 @@ async function getPublicClones() {
 }
 
 export default async function HomePage() {
-  const clones = await getPublicClones();
+  const [clones, session] = await Promise.all([getPublicClones(), auth()]);
 
   return (
     <>
@@ -34,10 +35,10 @@ export default async function HomePage() {
             Create an AI version of yourself and let anyone interact with it &mdash; even when you&apos;re away.
           </p>
           <Link
-            href="/sign-up"
+            href={session?.user ? "/dashboard" : "/sign-up"}
             className={buttonVariants({ size: "lg" })}
           >
-            Create your cyberclone
+            {session?.user ? "Go to dashboard" : "Create your cyberclone"}
           </Link>
         </section>
 

@@ -12,7 +12,9 @@
       "Bash(node node_modules/next/dist/bin/next dev --port 3000)",
       "Bash(lsof -ti:3000)",
       "Bash(xargs kill *)",
-      "Bash(node node_modules/next/dist/bin/next dev)"
+      "Bash(node node_modules/next/dist/bin/next dev)",
+      "Bash(vercel deploy *)",
+      "Bash(vercel env *)"
     ]
   }
 }

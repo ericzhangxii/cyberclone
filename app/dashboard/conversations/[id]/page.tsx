@@ -2,7 +2,6 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { getConversationDetail } from "@/actions/conversation";
-import { Navbar } from "@/components/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -22,8 +21,7 @@ export default async function ConversationDetailPage({ params }: Props) {
 
   return (
     <>
-      <Navbar />
-      <main className="max-w-3xl mx-auto px-4 py-10 w-full">
+      <main className="max-w-2xl mx-auto px-6 py-8 w-full">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9">
@@ -48,7 +46,7 @@ export default async function ConversationDetailPage({ params }: Props) {
               {conversation.mode.toLowerCase()}
             </Badge>
           </div>
-          <Link href="/dashboard" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <Link href="/dashboard?tab=inbox" className={buttonVariants({ variant: "outline", size: "sm" })}>
             ← Inbox
           </Link>
         </div>

@@ -6,7 +6,6 @@ import { ConversationMode } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -23,14 +22,14 @@ interface ChatInterfaceProps {
   cloneInitial: string;
 }
 
-const MODE_LABELS: Record<ConversationMode, { label: string; description: string; color: string }> = {
-  PUBLIC: { label: "Public", description: "Visible to everyone", color: "bg-green-100 text-green-700" },
-  PRIVATE: { label: "Private", description: "Visible to clone owner only", color: "bg-yellow-100 text-yellow-700" },
-  INCOGNITO: { label: "Incognito", description: "Only you can see this", color: "bg-gray-100 text-gray-700" },
-};
+const MODES: { key: ConversationMode; label: string; icon: string; description: string }[] = [
+  { key: "PUBLIC", label: "Public", icon: "🌐", description: "Visible to everyone" },
+  { key: "PRIVATE", label: "Private", icon: "🔒", description: "Only the clone owner sees this" },
+  { key: "INCOGNITO", label: "Incognito", icon: "👻", description: "Only you can see this" },
+];
 
 export function ChatInterface({ cloneId, cloneName, cloneImage, cloneInitial }: ChatInterfaceProps) {
-  const [mode, setMode] = useState<ConversationMode>(ConversationMode.PUBLIC);
+  const [mode, setMode] = useState<ConversationMode>("PUBLIC");
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -64,9 +63,7 @@ export function ChatInterface({ cloneId, cloneName, cloneImage, cloneInitial }: 
         body: JSON.stringify({ conversationId: convId, message: text }),
       });
 
-      if (!res.ok || !res.body) {
-        throw new Error("Chat request failed");
-      }
+      if (!res.ok || !res.body) throw new Error("Chat request failed");
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -97,62 +94,73 @@ export function ChatInterface({ cloneId, cloneName, cloneImage, cloneInitial }: 
     }
   }
 
-  const modeInfo = MODE_LABELS[mode];
+  const currentMode = MODES.find((m) => m.key === mode)!;
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Mode selector — only before first message */}
+    <div className="flex flex-col">
+      {/* Mode selector */}
       {!conversationId && (
-        <div className="flex gap-2 mb-4 flex-wrap">
-          {(Object.keys(MODE_LABELS) as ConversationMode[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMode(m)}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
-                mode === m
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border hover:border-primary/50"
-              )}
-            >
-              {MODE_LABELS[m].label}
-            </button>
-          ))}
-          <span className="text-xs text-muted-foreground self-center ml-1">
-            {modeInfo.description}
-          </span>
+        <div className="mb-5">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Conversation mode</p>
+          <div className="flex gap-2 flex-wrap">
+            {MODES.map((m) => (
+              <button
+                key={m.key}
+                onClick={() => setMode(m.key)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
+                  mode === m.key
+                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                    : "border-border bg-background hover:bg-muted"
+                )}
+              >
+                <span>{m.icon}</span>
+                {m.label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">{currentMode.description}</p>
         </div>
       )}
 
       {conversationId && (
-        <div className="mb-3">
-          <Badge className={cn("text-xs", modeInfo.color)} variant="outline">
-            {modeInfo.label} conversation
-          </Badge>
+        <div className="flex items-center gap-1.5 mb-4 text-xs text-muted-foreground">
+          <span>{currentMode.icon}</span>
+          <span>{currentMode.label} conversation</span>
         </div>
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4 min-h-[300px]">
+      <div className="space-y-4 mb-5 min-h-[260px] max-h-[500px] overflow-y-auto">
         {messages.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center pt-8">
-            Start a conversation with {cloneName}
-          </p>
+          <div className="flex flex-col items-center justify-center h-48 text-center">
+            <div className="text-3xl mb-2">👋</div>
+            <p className="font-medium">Start a conversation</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Say hello to {cloneName}
+            </p>
+          </div>
         )}
+
         {messages.map((msg, i) => (
-          <div key={i} className={cn("flex gap-3", msg.role === "USER" && "flex-row-reverse")}>
+          <div
+            key={i}
+            className={cn("flex gap-3 items-end", msg.role === "USER" && "flex-row-reverse")}
+          >
             {msg.role === "ASSISTANT" && (
-              <Avatar className="h-8 w-8 shrink-0">
+              <Avatar className="h-7 w-7 shrink-0 mb-0.5">
                 <AvatarImage src={cloneImage ?? undefined} />
-                <AvatarFallback>{cloneInitial}</AvatarFallback>
+                <AvatarFallback className="text-xs bg-gradient-to-br from-violet-500 to-indigo-500 text-white font-semibold">
+                  {cloneInitial}
+                </AvatarFallback>
               </Avatar>
             )}
             <div
               className={cn(
-                "max-w-[75%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap",
+                "max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
                 msg.role === "USER"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted",
+                  ? "bg-gradient-to-br from-violet-600 to-indigo-500 text-white rounded-br-sm"
+                  : "bg-muted rounded-bl-sm",
                 msg.pending && "animate-pulse"
               )}
             >
@@ -164,18 +172,22 @@ export function ChatInterface({ cloneId, cloneName, cloneImage, cloneInitial }: 
       </div>
 
       {/* Input */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-end">
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Message…"
+          placeholder={`Message ${cloneName}…`}
           rows={1}
-          className="resize-none"
+          className="resize-none rounded-xl min-h-[44px]"
           disabled={streaming}
         />
-        <Button onClick={sendMessage} disabled={streaming || !input.trim()}>
-          Send
+        <Button
+          onClick={sendMessage}
+          disabled={streaming || !input.trim()}
+          className="rounded-xl h-11 px-5 bg-gradient-to-r from-violet-600 to-indigo-500 hover:opacity-90 border-0 shrink-0"
+        >
+          {streaming ? "…" : "Send"}
         </Button>
       </div>
     </div>

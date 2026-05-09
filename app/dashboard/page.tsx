@@ -111,31 +111,36 @@ export default async function DashboardPage() {
                 ) : (
                   <ul className="space-y-3">
                     {inbox.map((conv) => (
-                      <li key={conv.id} className="flex items-start gap-3 border rounded-lg p-3">
-                        <Avatar className="h-8 w-8 shrink-0">
-                          <AvatarImage src={conv.visitor?.image ?? undefined} />
-                          <AvatarFallback>
-                            {conv.visitor?.name?.[0]?.toUpperCase() ?? "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="font-medium text-sm truncate">
-                              {conv.visitor?.name ?? "Anonymous"}
-                            </span>
-                            <Badge variant="outline" className="text-xs capitalize">
-                              {conv.mode.toLowerCase()}
-                            </Badge>
+                      <li key={conv.id}>
+                        <Link
+                          href={`/dashboard/conversations/${conv.id}`}
+                          className="flex items-start gap-3 border rounded-lg p-3 hover:bg-muted/50 transition-colors"
+                        >
+                          <Avatar className="h-8 w-8 shrink-0">
+                            <AvatarImage src={conv.visitor?.image ?? undefined} />
+                            <AvatarFallback>
+                              {conv.visitor?.name?.[0]?.toUpperCase() ?? "?"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="font-medium text-sm truncate">
+                                {conv.visitor?.name ?? "Anonymous"}
+                              </span>
+                              <Badge variant="outline" className="text-xs capitalize">
+                                {conv.mode.toLowerCase()}
+                              </Badge>
+                            </div>
+                            {conv.messages[0] && (
+                              <p className="text-sm text-muted-foreground line-clamp-1">
+                                {conv.messages[0].content}
+                              </p>
+                            )}
                           </div>
-                          {conv.messages[0] && (
-                            <p className="text-sm text-muted-foreground line-clamp-1">
-                              {conv.messages[0].content}
-                            </p>
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground shrink-0">
-                          {new Date(conv.updatedAt).toLocaleDateString()}
-                        </span>
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            {new Date(conv.updatedAt).toLocaleDateString()}
+                          </span>
+                        </Link>
                       </li>
                     ))}
                   </ul>

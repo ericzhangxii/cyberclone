@@ -14,7 +14,12 @@
       "Bash(xargs kill *)",
       "Bash(node node_modules/next/dist/bin/next dev)",
       "Bash(vercel deploy *)",
-      "Bash(vercel env *)"
+      "Bash(vercel env *)",
+      "Bash(curl -s -I \"https://cyberclone-theta.vercel.app/api/auth/signin/google\")",
+      "Bash(curl -sv \"https://cyberclone-theta.vercel.app/api/auth/signin/google\")",
+      "Bash(curl -sv -X POST \"https://cyberclone-theta.vercel.app/api/auth/signin/google\" -H \"Content-Type: application/x-www-form-urlencoded\" -d \"csrfToken=\")",
+      "Bash(curl -s \"https://cyberclone-theta.vercel.app/api/auth/csrf\")",
+      "Bash(node_modules/typescript/bin/tsc --noEmit)"
     ]
   }
 }

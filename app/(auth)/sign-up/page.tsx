@@ -8,7 +8,6 @@ import { registerUser } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
@@ -40,13 +39,28 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Create account</CardTitle>
-          <CardDescription>Start building your cyberclone today</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <div className="min-h-screen flex">
+      {/* Left panel */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-violet-600 to-indigo-500 items-center justify-center p-12">
+        <div className="text-white max-w-sm">
+          <div className="text-3xl font-bold mb-4">Cyberclone</div>
+          <p className="text-violet-100 text-lg leading-relaxed">
+            Set up your AI twin in minutes. Choose a model, write your prompt, and share your link.
+          </p>
+        </div>
+      </div>
+
+      {/* Right panel */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-sm space-y-6">
+          <div>
+            <Link href="/" className="text-sm font-bold bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent">
+              Cyberclone
+            </Link>
+            <h1 className="text-2xl font-bold mt-6 mb-1">Create your account</h1>
+            <p className="text-muted-foreground text-sm">Free forever. No credit card needed.</p>
+          </div>
+
           <Button
             type="button"
             variant="outline"
@@ -62,42 +76,44 @@ export default function SignUpPage() {
             Continue with Google
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Separator className="flex-1" />
             <span className="text-xs text-muted-foreground">or</span>
             <Separator className="flex-1" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1">
-              <Label htmlFor="name">Full name</Label>
-              <Input id="name" name="name" placeholder="Alex Smith" required />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Full name</Label>
+                <Input id="name" name="name" placeholder="Alex Smith" required />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="username">Username</Label>
+                <Input id="username" name="username" placeholder="alexsmith" required />
+              </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" name="username" placeholder="alexsmith" required />
-            </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="alex@example.com" required />
+              <Input id="email" name="email" type="email" placeholder="you@example.com" required />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" minLength={6} required />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 hover:opacity-90 border-0" disabled={loading}>
               {loading ? "Creating account…" : "Create account"}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/sign-in" className="underline">
+            <Link href="/sign-in" className="text-foreground font-medium hover:underline">
               Sign in
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

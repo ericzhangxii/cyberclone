@@ -29,6 +29,25 @@ export async function getPublicConversations(cloneId: string) {
   });
 }
 
+export async function getConversationDetail(conversationId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return null;
+
+  const clone = await prisma.cyberclone.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true },
+  });
+  if (!clone) return null;
+
+  return prisma.conversation.findUnique({
+    where: { id: conversationId, cloneId: clone.id },
+    include: {
+      messages: { orderBy: { createdAt: "asc" } },
+      visitor: { select: { name: true, username: true, image: true } },
+    },
+  });
+}
+
 export async function getMyInboxConversations() {
   const session = await auth();
   if (!session?.user?.id) return [];
